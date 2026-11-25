@@ -13,7 +13,8 @@ at a glance: many limbs, one brain, always busy on your behalf.
 import os
 from pathlib import Path
 
-LINE = '🐙'
+# The entry text: a single emoji, written verbatim to entry.txt.
+LINE = "🐙"
 
 ENTRY_FILENAME = "entry.txt"
 
