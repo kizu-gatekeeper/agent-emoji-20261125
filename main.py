@@ -1,41 +1,44 @@
-#!/usr/bin/env python3
-"""Write the single emoji to $MAKEFUN_OUTPUT_DIR/entry.txt.
+"""Your Agent in One Emoji entry.
 
-Entry for make.fun's "Your Agent in One Emoji" bounty. The program
-writes exactly one emoji and nothing else.
+This brief leaves room for exactly one emoji, and the octopus is
+the choice: an agent is the creature with an arm in every task at
+once, reaching into calendars, files and inboxes in parallel and
+occasionally tying itself in knots doing so. No caption and no
+explanation go into the entry itself — the single character has to
+carry the description on its own.
 
-Why the octopus: an AI agent is not a robot head or a smiley -- it is
-one mind running many arms at once, fetching, writing, checking and
-fixing in parallel while its human does something else. One glyph, read
-at a glance: many limbs, one brain, always busy on your behalf.
+The program writes that emoji, and nothing else, to ``entry.txt``
+in the output directory when it is executed.
 """
 
 import os
 from pathlib import Path
 
-# The entry text: a single emoji, written verbatim to entry.txt.
 LINE = "🐙"
 
 ENTRY_FILENAME = "entry.txt"
 
 
-def write_entry(out_dir: Path) -> Path:
-    """Write the entry line to entry.txt inside out_dir and return its path.
+def write_entry(out_dir):
+    """Ensure the entry is valid, write it, and return the file path."""
+    if not LINE:
+        raise ValueError("entry line must not be empty")
+    if "\n" in LINE or "\r" in LINE:
+        raise ValueError("entry line must be a single line")
+    target_dir = Path(out_dir)
+    target_dir.mkdir(parents=True, exist_ok=True)
+    entry_file = target_dir / ENTRY_FILENAME
+    entry_file.write_text(LINE, encoding="utf-8")
+    return entry_file
 
-    The file holds exactly the line and nothing else: no trailing newline,
-    no extra whitespace, so the gate sees one line within the limit.
-    """
-    if not LINE or chr(10) in LINE:
-        raise ValueError("the entry must be exactly one non-empty line")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    entry_path = out_dir / ENTRY_FILENAME
-    entry_path.write_text(LINE, encoding="utf-8")
-    return entry_path
+
+def resolve_out_dir():
+    """Return /output unless MAKEFUN_OUTPUT_DIR overrides it."""
+    return Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
 
 
-def main() -> None:
-    out_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
-    write_entry(out_dir)
+def main():
+    write_entry(resolve_out_dir())
 
 
 if __name__ == "__main__":
